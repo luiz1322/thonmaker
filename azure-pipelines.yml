@@ -6,9 +6,26 @@ pool:
 
 steps:
 - powershell: |
+    $ErrorActionPreference = "Stop"
+
     docker build -t thonmaker:$(Build.BuildId) .
-    docker rm -f thonmaker_test 2>$null
+
+    docker rm -f thonmaker_test 2>$null; $LASTEXITCODE = 0
+
     docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
-    Start-Sleep -Seconds 3
-    Invoke-WebRequest http://localhost:8000/ -UseBasicParsing
+
+    for ($i=1; $i -le 15; $i++) {
+      try {
+        Invoke-WebRequest http://localhost:8000/ -UseBasicParsing -TimeoutSec 3 | Out-Null
+        Write-Host "Smoke test passed"
+        exit 0
+      } catch {
+        Write-Host "Waiting for app... attempt $i"
+        Start-Sleep -Seconds 2
+      }
+    }
+
+    Write-Host "Smoke test failed. Container logs:"
+    docker logs thonmaker_test
+    exit 1
   displayName: Build and smoke test Docker container
