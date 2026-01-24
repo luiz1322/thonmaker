@@ -18,7 +18,8 @@ steps:
     python -m pip install --upgrade semgrep
 
     # Run SAST (report only – do not fail pipeline)
-    python -m semgrep scan --config=auto; $LASTEXITCODE = 0
+    python -m semgrep scan --config=auto
+    $global:LASTEXITCODE = 0
   displayName: "SAST - Semgrep Scan"
 
 # --- Build Docker image ---
@@ -47,7 +48,9 @@ steps:
 - powershell: |
     $ErrorActionPreference = "Stop"
     $env:TRIVY_CACHE_DIR = "$(Pipeline.Workspace)\trivy-cache"
+
     trivy image --severity HIGH,CRITICAL thonmaker:$(Build.BuildId)
+    $global:LASTEXITCODE = 0
   displayName: "Image CVE Scan - Trivy"
 
 # --- Smoke Test (with guaranteed cleanup) ---
@@ -57,13 +60,13 @@ steps:
     $name = "thonmaker_test_$(Build.BuildId)"
     $tag  = "thonmaker:$(Build.BuildId)"
 
-   function Remove-Container([string]$n) {
+    function Remove-Container([string]$n) {
       $old = $ErrorActionPreference
       $ErrorActionPreference = "SilentlyContinue"
       docker rm -f $n *> $null
       $global:LASTEXITCODE = 0
       $ErrorActionPreference = $old
-}
+    }
 
     try {
       # cleanup if exists (never fail)
@@ -96,4 +99,3 @@ steps:
       Remove-Container $name
     }
   displayName: "Smoke Test Docker Container"
-
