@@ -57,10 +57,13 @@ steps:
     $name = "thonmaker_test_$(Build.BuildId)"
     $tag  = "thonmaker:$(Build.BuildId)"
 
-    function Remove-Container([string]$n) {
+   function Remove-Container([string]$n) {
+      $old = $ErrorActionPreference
+      $ErrorActionPreference = "SilentlyContinue"
       docker rm -f $n *> $null
       $global:LASTEXITCODE = 0
-    }
+      $ErrorActionPreference = $old
+}
 
     try {
       # cleanup if exists (never fail)
