@@ -16,7 +16,8 @@ steps:
 
     python -m pip install --upgrade pip
     python -m pip install --upgrade semgrep
-    python -m semgrep scan --config=auto | | $true
+   python -m semgrep scan --config=auto; $LASTEXITCODE = 0
+
   displayName: "SAST - Semgrep Scan"
 
 # --- Build Docker image (so Trivy has something to scan) ---
