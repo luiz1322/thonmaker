@@ -16,8 +16,17 @@ steps:
 # ---------------------------
 - powershell: |
     $ErrorActionPreference = "Stop"
+
+    # Optional: force UTF-8 output (helps on Windows)
+    chcp 65001 | Out-Null
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $env:PYTHONUTF8 = "1"
+    $env:PYTHONIOENCODING = "utf-8"
+
     python -m pip install --upgrade pip
     python -m pip install --upgrade semgrep
+
+    # Run SAST (report only – do not fail pipeline)
     semgrep scan --config=auto
     $global:LASTEXITCODE = 0
   displayName: "SAST - Semgrep"
@@ -26,30 +35,57 @@ steps:
 # Build Docker image
 # ---------------------------
 - powershell: |
+    $ErrorActionPreference = "Stop"
     docker build -t $(imageName):$(Build.BuildId) .
   displayName: "Build Docker Image"
+
+# ---------------------------
+# Ensure Trivy exists (install if missing)
+# ---------------------------
+- powershell: |
+    $ErrorActionPreference = "Stop"
+
+    if (-not (Get-Command trivy -ErrorAction SilentlyContinue)) {
+      if (Get-Command winget -ErrorAction SilentlyContinue) {
+        winget install --id AquaSecurity.Trivy -e --accept-package-agreements --accept-source-agreements
+      } else {
+        Write-Host "ERROR: winget not found on this agent"
+        exit 1
+      }
+    }
+
+    trivy -v
+  displayName: "Install / Verify Trivy"
 
 # ---------------------------
 # Trivy Image Scan (report only)
 # ---------------------------
 - powershell: |
+    $ErrorActionPreference = "Stop"
+    $env:TRIVY_CACHE_DIR = "$(Pipeline.Workspace)\trivy-cache"
+
     trivy image --severity HIGH,CRITICAL $(imageName):$(Build.BuildId)
     $global:LASTEXITCODE = 0
   displayName: "Trivy Image Scan"
 
 # ---------------------------
-# Login to ACR
+# Login to ACR using Azure CLI (uses AzureRM service connection)
 # ---------------------------
-- task: Docker@2
+- task: AzureCLI@2
   displayName: "Login to ACR"
   inputs:
-    command: login
-    containerRegistry: sc-thonmaker-acr
+    azureSubscription: sc-thonmaker-azure
+    scriptType: ps
+    scriptLocation: inlineScript
+    inlineScript: |
+      az --version
+      az acr login --name $(acrName)
 
 # ---------------------------
 # Tag + Push image to ACR
 # ---------------------------
 - powershell: |
+    $ErrorActionPreference = "Stop"
     docker tag $(imageName):$(Build.BuildId) $(acrLoginServer)/$(imageName):$(Build.BuildId)
     docker push $(acrLoginServer)/$(imageName):$(Build.BuildId)
   displayName: "Push Image to ACR"
