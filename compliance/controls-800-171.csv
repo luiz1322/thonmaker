@@ -1,0 +1,7 @@
+ControlId,Family,Type,Title,RequiredEvidence
+3.1.1,AC,manual,Limit system access to authorized users,compliance/evidence/3.1.1.md
+3.1.2,AC,manual,Limit system access to transactions/functions,compliance/evidence/3.1.2.md
+3.1.3,AC,manual,Control information flow,compliance/evidence/3.1.3.md
+3.4.1,CM,auto,Establish and maintain baseline configurations,artifacts/hadolint.json;artifacts/trivy.json
+3.11.1,RA,auto,Periodically assess risk,artifacts/trivy.json;artifacts/semgrep.json
+3.14.1,SI,auto,Identify, report, correct flaws,artifacts/trivy.json;artifacts/semgrep.json
