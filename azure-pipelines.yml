@@ -5,13 +5,25 @@ pool:
   name: SelfHostedWindows
 
 steps:
+# --- SAST (Semgrep) ---
+- powershell: |
+    $ErrorActionPreference = "Stop"
+
+    python --version
+    python -m pip install --upgrade pip
+    pip install semgrep
+    semgrep scan --config auto
+  displayName: "SAST - Semgrep Scan"
+
+# --- Build + Smoke Test ---
 - powershell: |
     $ErrorActionPreference = "Stop"
 
     docker build -t thonmaker:$(Build.BuildId) .
 
-    $exists = docker ps -a --format "{{.Names}}" | Select-String -SimpleMatch "thonmaker_test"
-    if ($exists) { docker rm -f thonmaker_test | Out-Null }
+    # Remove container if it exists (DON'T fail if it doesn't)
+    docker rm -f thonmaker_test 2>$null
+    $LASTEXITCODE = 0
 
     docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
 
@@ -29,4 +41,4 @@ steps:
     Write-Host "Smoke test failed. Container logs:"
     docker logs thonmaker_test
     exit 1
-  displayName: Build and smoke test Docker container
+  displayName: "Build and smoke test Docker container"
