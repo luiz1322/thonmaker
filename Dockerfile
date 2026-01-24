@@ -1,11 +1,9 @@
 FROM python:3.11-slim
 
-# OS security updates + minimal packages
 RUN apt-get update && apt-get upgrade -y \
  && apt-get install -y --no-install-recommends ca-certificates \
  && rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
 RUN useradd -m -u 10001 appuser
 
 WORKDIR /app
@@ -15,7 +13,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# Give appuser ownership so the app can write if needed
 RUN chown -R appuser:appuser /app
 
 EXPOSE 8000
