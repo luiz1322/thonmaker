@@ -9,21 +9,20 @@ steps:
 - powershell: |
     $ErrorActionPreference = "Stop"
 
+    # Force UTF-8 output in Windows PowerShell
     chcp 65001 | Out-Null
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
     $env:PYTHONUTF8 = "1"
 
     python -m pip install --upgrade pip
-    python -m pip install --upgrade semgrep
+    pip install --upgrade semgrep
 
-    python -m semgrep scan --config=auto --sarif --output semgrep.sarif
-  displayName: "SAST - Semgrep (SARIF)"
+    # Run scan
+    semgrep scan --config=auto 
+  displayName: "SAST - Semgrep Scan"
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: semgrep.sarif
-    ArtifactName: sast-semgrep-sarif
-  displayName: "Publish Semgrep SARIF"
+
+
 
 # --- Build + Smoke Test ---
 - powershell: |
@@ -31,8 +30,9 @@ steps:
 
     docker build -t thonmaker:$(Build.BuildId) .
 
-    $exists = docker ps -a --format "{{.Names}}" | Select-String -SimpleMatch "thonmaker_test"
-    if ($exists) { docker rm -f thonmaker_test | Out-Null }
+    # Remove container if it exists (DON'T fail if it doesn't)
+    docker rm -f thonmaker_test 2>$null
+    $LASTEXITCODE = 0
 
     docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
 
