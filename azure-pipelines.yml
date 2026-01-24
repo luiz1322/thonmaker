@@ -13,41 +13,78 @@ steps:
     chcp 65001 | Out-Null
     [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
     $env:PYTHONUTF8 = "1"
+    $env:PYTHONIOENCODING = "utf-8"
 
     python -m pip install --upgrade pip
-    pip install --upgrade semgrep
+    python -m pip install --upgrade semgrep
 
-    # Run scan
-    semgrep scan --config=auto 
+    # Run scan (use python -m so PATH isn't an issue)
+    python -m semgrep scan --config=auto
   displayName: "SAST - Semgrep Scan"
 
-
-
-
-# --- Build + Smoke Test ---
+# --- Install/Verify Trivy (no Chocolatey required) ---
 - powershell: |
     $ErrorActionPreference = "Stop"
 
-    docker build -t thonmaker:$(Build.BuildId) .
-
-    # Remove container if it exists (DON'T fail if it doesn't)
-    docker rm -f thonmaker_test 2>$null
-    $LASTEXITCODE = 0
-
-    docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
-
-    for ($i=1; $i -le 15; $i++) {
-      try {
-        Invoke-WebRequest http://localhost:8000/ -UseBasicParsing -TimeoutSec 3 | Out-Null
-        Write-Host "Smoke test passed"
-        exit 0
-      } catch {
-        Write-Host "Waiting for app... attempt $i"
-        Start-Sleep -Seconds 2
+    if (-not (Get-Command trivy -ErrorAction SilentlyContinue)) {
+      if (Get-Command winget -ErrorAction SilentlyContinue) {
+        winget install --id AquaSecurity.Trivy -e --accept-package-agreements --accept-source-agreements
+      } else {
+        Write-Host "ERROR: 'winget' not found on this agent. Install Trivy manually or enable winget."
+        exit 1
       }
     }
 
-    Write-Host "Smoke test failed. Container logs:"
-    docker logs thonmaker_test
-    exit 1
+    trivy -v
+  displayName: "Install/Verify Trivy"
+
+# --- Trivy CVE Scan (fail on HIGH/CRITICAL) ---
+- powershell: |
+    $ErrorActionPreference = "Stop"
+
+    # Cache DB in workspace to speed up later runs
+    $env:TRIVY_CACHE_DIR = "$(Pipeline.Workspace)\trivy-cache"
+
+    trivy image --severity HIGH,CRITICAL thonmaker:$(Build.BuildId)
+  displayName: "Vuln Scan - Trivy (HIGH/CRITICAL)"
+
+# --- Build + Smoke Test (with guaranteed cleanup) ---
+- powershell: |
+    $ErrorActionPreference = "Stop"
+
+    $name = "thonmaker_test"
+    $port = 8000
+    $tag  = "thonmaker:$(Build.BuildId)"
+
+    docker build -t $tag .
+
+    try {
+      # Remove container if it exists (DON'T fail if it doesn't)
+      docker rm -f $name 2>$null
+      $LASTEXITCODE = 0
+
+      docker run -d --name $name -p ${port}:${port} $tag | Out-Null
+
+      for ($i=1; $i -le 15; $i++) {
+        try {
+          Invoke-WebRequest "http://localhost:$port/" -UseBasicParsing -TimeoutSec 3 | Out-Null
+          Write-Host "Smoke test passed"
+          exit 0
+        } catch {
+          Write-Host "Waiting for app... attempt $i"
+          Start-Sleep -Seconds 2
+        }
+      }
+
+
+
+      Write-Host "Smoke test failed. Container logs:"
+      docker logs $name
+      exit 1
+    }
+    finally {
+      # ALWAYS cleanup so the next run doesn't get port/name conflicts
+      docker rm -f $name 2>$null
+      $LASTEXITCODE = 0
+    }
   displayName: "Build and smoke test Docker container"
