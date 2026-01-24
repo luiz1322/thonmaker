@@ -1,37 +1,32 @@
 trigger:
-  - main
+- main
 
 pool:
   name: SelfHostedWindows
 
 steps:
-  # --- Build + Smoke Test ---
-  - powershell: |
-      $ErrorActionPreference = "Stop"
+- powershell: |
+    $ErrorActionPreference = "Stop"
 
-      docker build -t thonmaker:$(Build.BuildId) .
+    docker build -t thonmaker:$(Build.BuildId) .
 
-      docker rm -f thonmaker_test 2>$null
-      $LASTEXITCODE = 0
+    $exists = docker ps -a --format "{{.Names}}" | Select-String -SimpleMatch "thonmaker_test"
+    if ($exists) { docker rm -f thonmaker_test | Out-Null }
 
-      # Free port 8000 if something is using it
-      $pid = (Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess
-      if ($pid) { Stop-Process -Id $pid -Force }
+    docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
 
-      docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
-
-      for ($i=1; $i -le 15; $i++) {
-        try {
-          Invoke-WebRequest http://localhost:8000/ -UseBasicParsing -TimeoutSec 3 | Out-Null
-          Write-Host "Smoke test passed"
-          exit 0
-        } catch {
-          Write-Host "Waiting for app... attempt $i"
-          Start-Sleep -Seconds 2
-        }
+    for ($i=1; $i -le 15; $i++) {
+      try {
+        Invoke-WebRequest http://localhost:8000/ -UseBasicParsing -TimeoutSec 3 | Out-Null
+        Write-Host "Smoke test passed"
+        exit 0
+      } catch {
+        Write-Host "Waiting for app... attempt $i"
+        Start-Sleep -Seconds 2
       }
+    }
 
-      Write-Host "Smoke test failed. Container logs:"
-      docker logs thonmaker_test
-      exit 1
-    displayName: "Build and smoke test Docker container"
+    Write-Host "Smoke test failed. Container logs:"
+    docker logs thonmaker_test
+    exit 1
+  displayName: Build and smoke test Docker container
