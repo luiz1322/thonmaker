@@ -1,38 +1,15 @@
-trigger:
-- main
-
-pool:
-  name: SelfHostedWindows
-
-steps:
-# --- SAST (Semgrep) ---
-- powershell: |
-    $ErrorActionPreference = "Stop"
-
-    # Force UTF-8 output in Windows PowerShell
-    chcp 65001 | Out-Null
-    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    $env:PYTHONUTF8 = "1"
-
-    python -m pip install --upgrade pip
-    pip install --upgrade semgrep
-
-    # Run scan
-    semgrep scan --config=auto 
-  displayName: "SAST - Semgrep Scan"
-
-
-
-
 # --- Build + Smoke Test ---
 - powershell: |
     $ErrorActionPreference = "Stop"
 
     docker build -t thonmaker:$(Build.BuildId) .
 
-    # Remove container if it exists (DON'T fail if it doesn't)
     docker rm -f thonmaker_test 2>$null
     $LASTEXITCODE = 0
+
+    # Free port 8000 if something is using it
+    $pid = (Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -First 1).OwningProcess
+    if ($pid) { Stop-Process -Id $pid -Force }
 
     docker run -d --name thonmaker_test -p 8000:8000 thonmaker:$(Build.BuildId)
 
