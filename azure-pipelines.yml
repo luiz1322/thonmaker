@@ -12,7 +12,8 @@ variables:
 
 steps:
 # ---------------------------
-# SAST – Semgrep (report only)
+# SAST – Semgrep (FAIL on High/Critical-equivalent)
+# Treat Semgrep ERROR as the gate. If any ERROR findings -> fail pipeline.
 # ---------------------------
 - powershell: |
     $ErrorActionPreference = "Stop"
@@ -26,10 +27,10 @@ steps:
     python -m pip install --upgrade pip
     python -m pip install --upgrade semgrep
 
-    # Run SAST (report only – do not fail pipeline)
-    semgrep scan --config=auto
-    $global:LASTEXITCODE = 0
-  displayName: "SAST - Semgrep"
+    # Fail pipeline on findings at ERROR level
+    # --error ensures non-zero exit code when findings occur
+    semgrep scan --config=auto --severity=ERROR --error --metrics=off
+  displayName: "SAST - Semgrep (Fail on ERROR)"
 
 # ---------------------------
 # Build Docker image
@@ -58,15 +59,15 @@ steps:
   displayName: "Install / Verify Trivy"
 
 # ---------------------------
-# Trivy Image Scan (report only)
+# Trivy Image Scan (FAIL on HIGH/CRITICAL)
+# --exit-code 1 will fail if vulnerabilities are found at the selected severities
 # ---------------------------
 - powershell: |
     $ErrorActionPreference = "Stop"
     $env:TRIVY_CACHE_DIR = "$(Pipeline.Workspace)\trivy-cache"
 
-    trivy image --severity HIGH,CRITICAL $(imageName):$(Build.BuildId)
-    $global:LASTEXITCODE = 0
-  displayName: "Trivy Image Scan"
+    trivy image --severity HIGH,CRITICAL --exit-code 1 --no-progress $(imageName):$(Build.BuildId)
+  displayName: "Trivy Image Scan (Fail on HIGH/CRITICAL)"
 
 # ---------------------------
 # Login to ACR using Azure CLI (uses AzureRM service connection)
