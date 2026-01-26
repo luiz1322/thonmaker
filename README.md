@@ -69,7 +69,7 @@ OpenVAS running on a dedicated Azure Linux VM performing dynamic vulnerability s
 ### OpenVAS Scan Results
 Results from a completed OpenVAS scan (DAST), used as audit and compliance evidence.
 
-![scan-results](docs/screenshots/Scan%20results.png)
+![scan-results](docs/screenshots/scan-results.png)
 
 ---
 
